@@ -48,16 +48,15 @@ namespace TheGuardian.Core.ViewModels
 
         }
 
-        private MvxCommand _readArticleCommand;
-        public MvxCommand ReadArticleCommand
+        private MvxCommand<string> _readArticleCommand;
+        public MvxCommand<string> ReadArticleCommand
         {
             get
             {
-                return _readArticleCommand ?? (_readArticleCommand = new MvxCommand(() =>
+                return _readArticleCommand ?? (_readArticleCommand = new MvxCommand<string>((articleId) =>
                     {
-                    //  _todoList.AddItem(Description);
-                    //  Close(this);
-                }));
+                        ShowViewModel<ArticleViewModel>(new StoryHeader { Id = articleId });
+                    }));
             }
         }
 

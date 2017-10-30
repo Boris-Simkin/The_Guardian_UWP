@@ -67,11 +67,13 @@
             </SplitView.Pane>
             <SplitView.Content>
                 <ListView 
+                    x:Name="ArticlesList"
                     ItemsSource="{Binding Items}"
                     ItemTemplate="{StaticResource ItemTemplate}">
                     <i:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="SelectionChanged" >
-                            <Core:InvokeCommandAction Command="{Binding ReadArticleCommand}"/>
+                            <Core:InvokeCommandAction Command="{Binding ReadArticleCommand}"
+                                                      CommandParameter="{Binding ElementName=ArticlesList, Path=SelectedItem.Id}"/>
                         </Core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ListView>
