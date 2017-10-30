@@ -1,0 +1,83 @@
+﻿<views:MvxWindowsPage
+    x:Class="TheGuardian.UWP.Views.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:MvvmCross.Uwp.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:local="using:TheGuardianProject.UWP"
+    mc:Ignorable="d"
+    x:Name="myView">
+
+    <views:MvxWindowsPage.Resources>
+        <DataTemplate x:Key="ItemTemplate">
+            <StackPanel Orientation="vertical"   HorizontalAlignment="Stretch" Margin="0,0,0,10" Padding="0,0,5,0" >
+                <TextBlock TextWrapping="WrapWholeWords" FontSize="22" Text="{Binding WebTitle}" Margin="0,0,0,10" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{Binding StoryHeaderAdditionalFields.Thumbnail}" />
+                    <TextBlock Margin="5,0,0,0" Grid.Column="1" TextWrapping="WrapWholeWords" local:TextBlockHelper.FormattedText="{Binding StoryHeaderAdditionalFields.TrailText}"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+    </views:MvxWindowsPage.Resources>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ToggleButton x:Name="ToggleHamburgerMenu"
+                          Content="&#xE700;"
+                          FontFamily="Segoe MDL2 Assets"
+                          IsChecked="{Binding IsPaneOpen, ElementName=NavigationMenu, Mode=TwoWay}"/>
+            <TextBlock Text="{Binding ElementName=SectionsList, Path=SelectedItem.Key}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="25" FontWeight="SemiBold"/>
+        </StackPanel>
+
+        <SplitView x:Name="NavigationMenu"
+                   Grid.Row="1"
+                   DisplayMode="Inline"
+                   OpenPaneLength="100"
+                   IsPaneOpen="False">
+            <SplitView.Resources>
+                <DataTemplate x:Key="SectionTemplate">
+                    <TextBlock Text="{Binding Key}"/>
+                </DataTemplate>
+            </SplitView.Resources>
+            <SplitView.Pane>
+                <ListView
+                    x:Name="SectionsList"
+                    ItemsSource="{Binding Sections}"
+                    ItemTemplate="{StaticResource SectionTemplate}">
+                    <i:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="SelectionChanged" >
+                            <Core:InvokeCommandAction Command="{Binding LoadSectionTitlesCommand}"
+                                                      CommandParameter="{Binding ElementName=SectionsList, Path=SelectedItem.Value}"/>
+                        </Core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+
+
+            </SplitView.Pane>
+            <SplitView.Content>
+                <ListView 
+                    ItemsSource="{Binding Items}"
+                    ItemTemplate="{StaticResource ItemTemplate}">
+                    <i:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="SelectionChanged" >
+                            <Core:InvokeCommandAction Command="{Binding ReadArticleCommand}"/>
+                        </Core:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+            </SplitView.Content>
+
+        </SplitView>
+
+    </Grid>
+</views:MvxWindowsPage>
