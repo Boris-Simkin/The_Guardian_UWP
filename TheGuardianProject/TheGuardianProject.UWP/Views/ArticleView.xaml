@@ -5,13 +5,18 @@
     xmlns:views="using:MvvmCross.Uwp.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
+    xmlns:local="using:TheGuardianProject.UWP"
     mc:Ignorable="d">
 
+    <Page.TopAppBar>
+        <CommandBar>
+            <CommandBar.Content>
+                <AppBarButton Label="Go back" Icon="Back" Command="{Binding GoBackCommand}"/>
+            </CommandBar.Content>
+        </CommandBar>
+    </Page.TopAppBar>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="This is article view"/>
-        <TextBlock Text="{Binding TestParams}" Margin="0,28,0,-28"/>
-        <Button Content="Go back" Command="{Binding GoBackCommand}" Margin="10,97,0,231"/>
-        
+        <WebView Source="{Binding ArticleUri}"/>
     </Grid>
+
 </views:MvxWindowsPage>

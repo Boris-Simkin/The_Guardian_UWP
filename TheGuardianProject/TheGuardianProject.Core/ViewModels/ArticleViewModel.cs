@@ -12,10 +12,11 @@ namespace TheGuardian.Core.ViewModels
 
         public void Init(StoryHeader parameter)
         {
-            TestParams = parameter.Id;
+            ArticleUri = "https://www.theguardian.com/" + parameter.Id;
+            // + " & api-key=" + Constants.API_KEY;
         }
 
-        public string TestParams { get; set; }
+        public string ArticleUri { get; set; }
 
 
         private MvxCommand _goBackCommand;
