@@ -16,9 +16,8 @@
         </CommandBar>
     </Page.TopAppBar>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <!--<WebView Source="{Binding ArticleUri}"/>-->
         <WebView local:WebViewHelper.HTML="{Binding ArticleContent}"/>
-
+        <ProgressRing x:Name="PRing" Width="100" Height="100" IsActive="{Binding PageLoading}"/>
     </Grid>
 
 </views:MvxWindowsPage>

@@ -80,6 +80,6 @@
             </SplitView.Content>
 
         </SplitView>
-
+        <ProgressRing x:Name="PRing" Grid.Row="1" Width="100" Height="100" IsActive="{Binding PageLoading}"/>
     </Grid>
 </views:MvxWindowsPage>

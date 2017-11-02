@@ -10,7 +10,6 @@ namespace TheGuardian.Core.ViewModels
 {
     public class MainViewModel : MvxViewModel
     {
-
         private readonly HttpService _httpService;
 
         public MainViewModel(HttpService httpService)
@@ -33,9 +32,18 @@ namespace TheGuardian.Core.ViewModels
             private set { SetProperty(ref _items, value); }
         }
 
+        private bool _pageLoading;
+        public bool PageLoading
+        {
+            get { return _pageLoading; }
+            private set { SetProperty(ref _pageLoading, value); }
+        }
+
         public async void Init()
         {
+            PageLoading = true;
             await GetHeadersAsync(_sections.SectionsDict.Values.First());
+            PageLoading = false;
         }
 
         public async Task GetHeadersAsync(string section)

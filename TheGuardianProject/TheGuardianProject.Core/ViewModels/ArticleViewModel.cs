@@ -11,51 +11,39 @@ namespace TheGuardian.Core.ViewModels
 {
     public class ArticleViewModel : MvxViewModel
     {
-        public ArticleViewModel()
+        private readonly HttpService _httpService;
+        public ArticleViewModel(HttpService httpService)
         {
+            _httpService = httpService;
         }
 
-        public void Init(StoryHeader parameter)
+        public async void Init(StoryHeader parameter)
         {
-            ArticleUri = "https://www.theguardian.com/" + parameter.Id;
-            // + " & api-key=" + Constants.API_KEY;
-            HtmlDocument doc = new HtmlDocument();
-
-            //string url = "https://www.digikala.com/";  
-            string result = string.Empty;
-            using (HttpClient client = new HttpClient())
-            {
-                using (HttpResponseMessage response = client.GetAsync(ArticleUri).Result)
-                {
-                    using (HttpContent content = response.Content)
-                    {
-                        result = content.ReadAsStringAsync().Result;
-                    }
-                }
-            }
-            doc.LoadHtml(result);
-
+            ArticleContent = string.Empty;
+            PageLoading = true;
             //Classes and Id's you want to remove from the html content
-            Regex classes = new Regex("meta__extras|submeta|l-footer u-cf|content-footer");
+            Regex classes = new Regex("meta__extras|submeta|l-footer|content-footer");
             Regex ids = new Regex("bannerandheader");
 
-            var toRemove = doc.DocumentNode.Descendants()
-                  .Where(x => (x.Attributes.Contains("class")
-                  && classes.IsMatch(x.Attributes["class"].Value)) ||
-                  ids.IsMatch(x.Id)
-                  ).ToList();
-
-            //x.Id.Contains("bannerandheader")
-            foreach (var node in toRemove)
-                node.Remove();
-
-            ArticleContent = doc.DocumentNode.InnerHtml;
+            ArticleContent = await _httpService
+                .GetHtmlContentAsync(Constants.BASE_WEB_URL + parameter.Id, classes, ids);
+            PageLoading = false;
         }
 
-        public string ArticleUri { get; set; }
+        private string _articleContent;
 
-        public string ArticleContent { get; set; }
+        public string ArticleContent
+        {
+            get { return _articleContent; }
+            private set { SetProperty(ref _articleContent, value); }
+        }
 
+        private bool _pageLoading;
+        public bool PageLoading
+        {
+            get { return _pageLoading; }
+            private set { SetProperty(ref _pageLoading, value); }
+        }
 
         private MvxCommand _goBackCommand;
         public MvxCommand GoBackCommand
