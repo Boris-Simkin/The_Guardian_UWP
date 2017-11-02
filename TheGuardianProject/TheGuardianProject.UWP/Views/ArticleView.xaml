@@ -16,7 +16,9 @@
         </CommandBar>
     </Page.TopAppBar>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <WebView Source="{Binding ArticleUri}"/>
+        <!--<WebView Source="{Binding ArticleUri}"/>-->
+        <WebView local:WebViewHelper.HTML="{Binding ArticleContent}"/>
+
     </Grid>
 
 </views:MvxWindowsPage>

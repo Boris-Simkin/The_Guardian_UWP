@@ -53,6 +53,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.6.2.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlAgilityPack.1.6.2\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Mntone.XPath, Version=0.9.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Mntone.XPath.0.9.0.5\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Mntone.XPath.dll</HintPath>
+    </Reference>
     <Reference Include="MvvmCross.Binding">
       <HintPath>..\..\packages\MvvmCross.Binding.5.0.6\lib\portable-net45+win+wpa81+wp80\MvvmCross.Binding.dll</HintPath>
       <Private>True</Private>

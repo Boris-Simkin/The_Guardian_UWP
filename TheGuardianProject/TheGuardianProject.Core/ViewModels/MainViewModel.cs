@@ -44,7 +44,7 @@ namespace TheGuardian.Core.ViewModels
             param.Add("api-key", Constants.API_KEY);
             param.Add(Constants.SHOW_FIELDS_PARAM, "thumbnail,trailText,headline");
             SearchResult storyHeader = await _httpService.GetAsync<SearchResult>(Constants.BASE_API_URL + section, param);
-            Items = new ObservableCollection<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);//storyHeader.SearchResponse.StoryHeaders;
+            Items = new ObservableCollection<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);
 
         }
 
