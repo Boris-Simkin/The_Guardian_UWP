@@ -6,8 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="using:TheGuardianProject.UWP"
+    xmlns:converters="using:TheGuardianProject.UWP.Views.Converters"
+    xmlns:myViews="using:TheGuardianProject.UWP.Views"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
-
+    <views:MvxWindowsPage.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    </views:MvxWindowsPage.Resources>
     <Page.TopAppBar>
         <CommandBar>
             <CommandBar.Content>
@@ -16,8 +22,26 @@
         </CommandBar>
     </Page.TopAppBar>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <WebView local:WebViewHelper.HTML="{Binding ArticleContent}"/>
+        <Grid>
+            <Grid.Visibility>
+                <Binding Path="NoConnection" Converter="{StaticResource BooleanToVisibility}">
+                    <Binding.ConverterParameter>
+                        <x:Boolean>True</x:Boolean>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </Grid.Visibility>
+            <WebView local:WebViewHelper.HTML="{Binding ArticleContent}"/>
+        </Grid>
         <ProgressRing x:Name="PRing" Width="100" Height="100" IsActive="{Binding PageLoading}"/>
+        <myViews:ErrorControl Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                              Visibility="{Binding Path=NoConnection, Converter={StaticResource BooleanToVisibility}}">
+            <i:Interaction.Behaviors>
+                <Core:EventTriggerBehavior EventName="Click" >
+                    <Core:InvokeCommandAction Command="{Binding Reload}"/>
+                </Core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+        </myViews:ErrorControl>
     </Grid>
+
 
 </views:MvxWindowsPage>

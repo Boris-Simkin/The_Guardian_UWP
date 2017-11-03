@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TheGuardianProject.Core.Models;
 using System.Linq;
+using System;
 
 namespace TheGuardian.Core.ViewModels
 {
@@ -19,7 +20,6 @@ namespace TheGuardian.Core.ViewModels
             string[] Keys = _sections.SectionsDict.Keys.ToArray();
 
             var FirstKey = _sections.SectionsDict.ToList()[0];
-
         }
         Sections _sections = new Sections();
         public Dictionary<string, string> Sections => _sections.SectionsDict;
@@ -32,6 +32,13 @@ namespace TheGuardian.Core.ViewModels
             private set { SetProperty(ref _items, value); }
         }
 
+        private bool _noConnection;
+        public bool NoConnection
+        {
+            get { return _noConnection; }
+            set { SetProperty(ref _noConnection, value); }
+        }
+
         private bool _pageLoading;
         public bool PageLoading
         {
@@ -41,19 +48,31 @@ namespace TheGuardian.Core.ViewModels
 
         public async void Init()
         {
-            PageLoading = true;
-            await GetHeadersAsync(_sections.SectionsDict.Values.First());
-            PageLoading = false;
+            await TryLoadingAsync();
         }
 
-        public async Task GetHeadersAsync(string section)
+        public async Task TryLoadingAsync()
         {
+            await TryGetHeadersAsync(_sections.SectionsDict.Values.First());
+        }
+
+        public async Task TryGetHeadersAsync(string section)
+        {
+            PageLoading = true;
             Dictionary<string, string> param = new Dictionary<string, string>();
             param.Add("api-key", Constants.API_KEY);
             param.Add(Constants.SHOW_FIELDS_PARAM, "thumbnail,trailText,headline");
-            SearchResult storyHeader = await _httpService.GetAsync<SearchResult>(Constants.BASE_API_URL + section, param);
-            Items = new ObservableCollection<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);
-
+            try
+            {
+                SearchResult storyHeader = await _httpService.GetAsync<SearchResult>(Constants.BASE_API_URL + section, param);
+                Items = new ObservableCollection<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);
+                NoConnection = false;
+            }
+            catch (Exception)
+            {
+                NoConnection = true;
+            }
+            PageLoading = false;
         }
 
         private MvxCommand<string> _readArticleCommand;
@@ -75,11 +94,22 @@ namespace TheGuardian.Core.ViewModels
             {
                 return _loadSectionTitlesCommand ?? (_loadSectionTitlesCommand = new MvxAsyncCommand<string>(async (selectedSection) =>
                 {
-                    await GetHeadersAsync(selectedSection);
+                    await TryGetHeadersAsync(selectedSection);
                 }));
             }
         }
 
+        private MvxAsyncCommand _reload;
+        public MvxAsyncCommand Reload
+        {
+            get
+            {
+                return _reload ?? (_reload = new MvxAsyncCommand(async () =>
+                {
+                    await TryLoadingAsync();
+                }));
+            }
+        }
 
     }
 }

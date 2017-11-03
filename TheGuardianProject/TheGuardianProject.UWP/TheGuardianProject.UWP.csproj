@@ -99,6 +99,11 @@
     <Compile Include="Views\ArticleView.xaml.cs">
       <DependentUpon>ArticleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Views\Converters\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Views\ErrorControl.xaml.cs">
+      <DependentUpon>ErrorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WebViewHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />
@@ -130,6 +135,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\ArticleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ErrorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

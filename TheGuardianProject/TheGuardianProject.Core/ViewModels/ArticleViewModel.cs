@@ -12,6 +12,7 @@ namespace TheGuardian.Core.ViewModels
     public class ArticleViewModel : MvxViewModel
     {
         private readonly HttpService _httpService;
+        private string _headerId;
         public ArticleViewModel(HttpService httpService)
         {
             _httpService = httpService;
@@ -20,14 +21,34 @@ namespace TheGuardian.Core.ViewModels
         public async void Init(StoryHeader parameter)
         {
             ArticleContent = string.Empty;
+            _headerId = parameter.Id;
+            await TryGetPageAsync(_headerId);
+        }
+
+        public async Task TryGetPageAsync(string headerId)
+        {
             PageLoading = true;
             //Classes and Id's you want to remove from the html content
             Regex classes = new Regex("meta__extras|submeta|l-footer|content-footer");
             Regex ids = new Regex("bannerandheader");
-
-            ArticleContent = await _httpService
-                .GetHtmlContentAsync(Constants.BASE_WEB_URL + parameter.Id, classes, ids);
+            try
+            {
+                ArticleContent = await _httpService
+                    .GetHtmlContentAsync(Constants.BASE_WEB_URL + headerId, classes, ids);
+                NoConnection = false;
+            }
+            catch (System.Exception)
+            {
+                NoConnection = true;
+            }
             PageLoading = false;
+        }
+
+        private bool _noConnection;
+        public bool NoConnection
+        {
+            get { return _noConnection; }
+            set { SetProperty(ref _noConnection, value); }
         }
 
         private string _articleContent;
@@ -53,6 +74,18 @@ namespace TheGuardian.Core.ViewModels
                 return _goBackCommand ?? (_goBackCommand = new MvxCommand(() =>
                 {
                     Close(this);
+                }));
+            }
+        }
+
+        private MvxAsyncCommand _reload;
+        public MvxAsyncCommand Reload
+        {
+            get
+            {
+                return _reload ?? (_reload = new MvxAsyncCommand(async () =>
+                {
+                    await TryGetPageAsync(_headerId);
                 }));
             }
         }

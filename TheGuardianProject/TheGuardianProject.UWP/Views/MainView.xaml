@@ -8,10 +8,13 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:local="using:TheGuardianProject.UWP"
+    xmlns:myViews="using:TheGuardianProject.UWP.Views"
+    xmlns:converters="using:TheGuardianProject.UWP.Views.Converters"
     mc:Ignorable="d"
     x:Name="myView">
 
     <views:MvxWindowsPage.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
         <DataTemplate x:Key="ItemTemplate">
             <StackPanel Orientation="vertical"  HorizontalAlignment="Stretch" Margin="0,0,0,10" Padding="0,0,5,0" >
                 <TextBlock TextWrapping="WrapWholeWords" FontSize="22" Text="{Binding WebTitle}" Margin="0,0,0,10" />
@@ -70,6 +73,13 @@
                     x:Name="ArticlesList"
                     ItemsSource="{Binding Items}"
                     ItemTemplate="{StaticResource ItemTemplate}">
+                    <ListView.Visibility>
+                        <Binding Path="NoConnection" Converter="{StaticResource BooleanToVisibility}">
+                            <Binding.ConverterParameter>
+                                <x:Boolean>True</x:Boolean>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </ListView.Visibility>
                     <i:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="SelectionChanged" >
                             <Core:InvokeCommandAction Command="{Binding ReadArticleCommand}"
@@ -81,5 +91,13 @@
 
         </SplitView>
         <ProgressRing x:Name="PRing" Grid.Row="1" Width="100" Height="100" IsActive="{Binding PageLoading}"/>
+        <myViews:ErrorControl Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                              Visibility="{Binding Path=NoConnection, Converter={StaticResource BooleanToVisibility}}">
+            <i:Interaction.Behaviors>
+                <Core:EventTriggerBehavior EventName="Click" >
+                    <Core:InvokeCommandAction Command="{Binding Reload}"/>
+                </Core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+        </myViews:ErrorControl>
     </Grid>
 </views:MvxWindowsPage>
