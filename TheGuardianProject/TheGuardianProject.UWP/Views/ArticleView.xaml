@@ -13,11 +13,14 @@
     mc:Ignorable="d">
     <views:MvxWindowsPage.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+        <converters:InvertBooleanConverter x:Key="InvertBoolean"/>
     </views:MvxWindowsPage.Resources>
     <Page.TopAppBar>
-        <CommandBar>
+        <CommandBar x:Name="MyCommandBar">
             <CommandBar.Content>
-                <AppBarButton Label="Go back" Icon="Back" Command="{Binding GoBackCommand}"/>
+              
+                <AppBarButton Label="Go back" Icon="Back" Command="{Binding GoBackCommand}" Height="Auto"
+                              IsCompact="{Binding IsOpen, ElementName=MyCommandBar, Converter={StaticResource InvertBoolean}}"/>
             </CommandBar.Content>
         </CommandBar>
     </Page.TopAppBar>
@@ -37,7 +40,7 @@
                               Visibility="{Binding Path=NoConnection, Converter={StaticResource BooleanToVisibility}}">
             <i:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="Click" >
-                    <Core:InvokeCommandAction Command="{Binding Reload}"/>
+                    <Core:InvokeCommandAction Command="{Binding ReloadCommand}"/>
                 </Core:EventTriggerBehavior>
             </i:Interaction.Behaviors>
         </myViews:ErrorControl>

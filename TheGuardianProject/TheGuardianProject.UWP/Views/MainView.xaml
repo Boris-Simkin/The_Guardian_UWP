@@ -40,7 +40,7 @@
                           Content="&#xE700;"
                           FontFamily="Segoe MDL2 Assets"
                           IsChecked="{Binding IsPaneOpen, ElementName=NavigationMenu, Mode=TwoWay}"/>
-            <TextBlock Text="{Binding ElementName=SectionsList, Path=SelectedItem.Key}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="25" FontWeight="SemiBold"/>
+            <TextBlock Text="{Binding CurrentSection.Name}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="25" FontWeight="SemiBold"/>
         </StackPanel>
 
         <SplitView x:Name="NavigationMenu"
@@ -50,18 +50,18 @@
                    IsPaneOpen="False">
             <SplitView.Resources>
                 <DataTemplate x:Key="SectionTemplate">
-                    <TextBlock Text="{Binding Key}"/>
+                    <TextBlock Text="{Binding Name}"/>
                 </DataTemplate>
             </SplitView.Resources>
             <SplitView.Pane>
                 <ListView
                     x:Name="SectionsList"
                     ItemsSource="{Binding Sections}"
-                    ItemTemplate="{StaticResource SectionTemplate}">
+                    ItemTemplate="{StaticResource SectionTemplate}" Loaded="SectionsList_Loaded" >
                     <i:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="SelectionChanged" >
                             <Core:InvokeCommandAction Command="{Binding LoadSectionTitlesCommand}"
-                                                      CommandParameter="{Binding ElementName=SectionsList, Path=SelectedItem.Value}"/>
+                                                      CommandParameter="{Binding ElementName=SectionsList, Path=SelectedItem.Name}"/>
                         </Core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ListView>
@@ -95,7 +95,7 @@
                               Visibility="{Binding Path=NoConnection, Converter={StaticResource BooleanToVisibility}}">
             <i:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="Click" >
-                    <Core:InvokeCommandAction Command="{Binding Reload}"/>
+                    <Core:InvokeCommandAction Command="{Binding ReloadCommand}"/>
                 </Core:EventTriggerBehavior>
             </i:Interaction.Behaviors>
         </myViews:ErrorControl>

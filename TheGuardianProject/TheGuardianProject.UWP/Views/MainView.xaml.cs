@@ -27,5 +27,10 @@ namespace TheGuardian.UWP.Views
             this.InitializeComponent();
         }
 
+        private void SectionsList_Loaded(object sender, RoutedEventArgs e)
+        {
+            //Setting the section to the first and triggering view model to get the content
+           // SectionsList.SelectedIndex = 0;
+        }
     }
 }

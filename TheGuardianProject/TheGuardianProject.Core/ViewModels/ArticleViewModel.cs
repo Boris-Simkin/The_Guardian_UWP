@@ -78,12 +78,12 @@ namespace TheGuardian.Core.ViewModels
             }
         }
 
-        private MvxAsyncCommand _reload;
-        public MvxAsyncCommand Reload
+        private MvxAsyncCommand _reloadCommand;
+        public MvxAsyncCommand ReloadCommand
         {
             get
             {
-                return _reload ?? (_reload = new MvxAsyncCommand(async () =>
+                return _reloadCommand ?? (_reloadCommand = new MvxAsyncCommand(async () =>
                 {
                     await TryGetPageAsync(_headerId);
                 }));

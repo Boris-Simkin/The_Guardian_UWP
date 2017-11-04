@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,18 +7,51 @@ using System.Threading.Tasks;
 
 namespace TheGuardianProject.Core.Models
 {
-    public class Sections
+    public class Sections : IEnumerable<Section>
     {
-        private Dictionary<string, string> _sectionsDict = new Dictionary<string, string>()
+
+        public Sections()
         {
-            { "Main", "search" },
-            { "Technology", "technology" },
-            { "Opinion", "commentisfree" },
-            { "Culture", "culture" },
-            { "Travel", "travel" },
-            { "World", "world" },
-            { "Business", "business" },
+            _current = _list.First();
+        }
+
+        List<Section> _list = new List<Section>
+        {
+                new Section( "Main", "search" ),
+                new Section( "Technology", "technology" ),
+                new Section( "Opinion", "commentisfree" ),
+                new Section( "Culture", "culture" ),
+                new Section( "Travel", "travel" ),
+                new Section( "World", "world" ),
+                new Section( "Business", "business" ),
         };
-        public Dictionary<string, string> SectionsDict => _sectionsDict;
+
+        private Section _current;
+        public Section Current
+        {
+            get { return _current; }
+            set { if (value != null) _current = value; }
+        }
+
+        public Section ByName(string name)
+        {
+            return _list.Where(s => s.Name == name).FirstOrDefault();
+        }
+
+        public Section ByAddress(string address)
+        {
+            return _list.Where(s => s.Address == address).FirstOrDefault();
+        }
+
+        public IEnumerator<Section> GetEnumerator()
+        {
+            foreach (var section in _list)
+                yield return section;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

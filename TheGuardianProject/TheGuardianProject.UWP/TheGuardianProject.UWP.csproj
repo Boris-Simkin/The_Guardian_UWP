@@ -96,11 +96,12 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="DebugTrace.cs" />
+    <Compile Include="LocalSettings.cs" />
     <Compile Include="Views\ArticleView.xaml.cs">
       <DependentUpon>ArticleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Converters\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Views\Converters\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Views\Converters\InvertBooleanConverter.cs" />
     <Compile Include="Views\ErrorControl.xaml.cs">
       <DependentUpon>ErrorControl.xaml</DependentUpon>
     </Compile>

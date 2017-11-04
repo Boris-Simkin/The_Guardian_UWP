@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 using TheGuardianProject.Core.Models;
 using System.Linq;
 using System;
+using TheGuardianProject.Core;
 
 namespace TheGuardian.Core.ViewModels
 {
     public class MainViewModel : MvxViewModel
     {
         private readonly HttpService _httpService;
+        private readonly ILocalSettings _localSettings;
 
-        public MainViewModel(HttpService httpService)
+        public MainViewModel(HttpService httpService, ILocalSettings localSettings)
         {
             _httpService = httpService;
-
-            string[] Keys = _sections.SectionsDict.Keys.ToArray();
-
-            var FirstKey = _sections.SectionsDict.ToList()[0];
+            _localSettings = localSettings;
+            Sections = new Sections();
         }
-        Sections _sections = new Sections();
-        public Dictionary<string, string> Sections => _sections.SectionsDict;
+
+        public Sections Sections { get; private set; }
 
         private ObservableCollection<StoryHeader> _items;
 
@@ -48,12 +48,14 @@ namespace TheGuardian.Core.ViewModels
 
         public async void Init()
         {
-            await TryLoadingAsync();
+            CurrentSection = Sections.ByName(_localSettings.Load<string>("LastVisitedSection"));
+            await TryGetHeadersAsync(CurrentSection.Address);
         }
 
-        public async Task TryLoadingAsync()
+        public Section CurrentSection
         {
-            await TryGetHeadersAsync(_sections.SectionsDict.Values.First());
+            get { return Sections.Current; }
+            set { Sections.Current = value; RaisePropertyChanged("CurrentSection"); }
         }
 
         public async Task TryGetHeadersAsync(string section)
@@ -94,19 +96,22 @@ namespace TheGuardian.Core.ViewModels
             {
                 return _loadSectionTitlesCommand ?? (_loadSectionTitlesCommand = new MvxAsyncCommand<string>(async (selectedSection) =>
                 {
-                    await TryGetHeadersAsync(selectedSection);
+                    if (selectedSection != null)
+                        CurrentSection = Sections.ByName(selectedSection);
+                    _localSettings.Save("LastVisitedSection", CurrentSection.Name);
+                    await TryGetHeadersAsync(CurrentSection.Address);
                 }));
             }
         }
 
-        private MvxAsyncCommand _reload;
-        public MvxAsyncCommand Reload
+        private MvxAsyncCommand _reloadCommand;
+        public MvxAsyncCommand ReloadCommand
         {
             get
             {
-                return _reload ?? (_reload = new MvxAsyncCommand(async () =>
+                return _reloadCommand ?? (_reloadCommand = new MvxAsyncCommand(async () =>
                 {
-                    await TryLoadingAsync();
+                    await TryGetHeadersAsync(CurrentSection.Address);
                 }));
             }
         }

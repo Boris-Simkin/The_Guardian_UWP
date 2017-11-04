@@ -2,6 +2,9 @@
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform.Platform;
 using MvvmCross.Uwp.Platform;
+using MvvmCross.Platform;
+using TheGuardianProject.Core;
+using TheGuardianProject.UWP;
 
 namespace TheGuardian.UWP
 {
@@ -13,6 +16,7 @@ namespace TheGuardian.UWP
 
         protected override IMvxApplication CreateApp()
         {
+            Mvx.LazyConstructAndRegisterSingleton<ILocalSettings, LocalSettings>();
             return new Core.App();
         }
 

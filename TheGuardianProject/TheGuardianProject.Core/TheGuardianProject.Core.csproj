@@ -37,8 +37,10 @@
     <Compile Include="App.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="HttpService.cs" />
+    <Compile Include="ILocalSettings.cs" />
     <Compile Include="Models\SearchResponse.cs" />
     <Compile Include="Models\SearchResult.cs" />
+    <Compile Include="Models\Section.cs" />
     <Compile Include="Models\Sections.cs" />
     <Compile Include="Models\StoryHeader.cs" />
     <Compile Include="Models\StoryHeaderAdditionalFields.cs" />
