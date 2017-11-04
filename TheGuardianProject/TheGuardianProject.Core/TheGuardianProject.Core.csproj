@@ -38,6 +38,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="HttpService.cs" />
     <Compile Include="ILocalSettings.cs" />
+    <Compile Include="ITileManager.cs" />
     <Compile Include="Models\SearchResponse.cs" />
     <Compile Include="Models\SearchResult.cs" />
     <Compile Include="Models\Section.cs" />

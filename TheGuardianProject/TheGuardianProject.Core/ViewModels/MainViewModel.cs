@@ -14,11 +14,13 @@ namespace TheGuardian.Core.ViewModels
     {
         private readonly HttpService _httpService;
         private readonly ILocalSettings _localSettings;
-
-        public MainViewModel(HttpService httpService, ILocalSettings localSettings)
+        private readonly ITileManager _tileManager;
+        public MainViewModel(HttpService httpService, ILocalSettings localSettings, ITileManager tileManager)
         {
             _httpService = httpService;
             _localSettings = localSettings;
+            _tileManager = tileManager;
+
             Sections = new Sections();
         }
 
@@ -50,6 +52,18 @@ namespace TheGuardian.Core.ViewModels
         {
             CurrentSection = Sections.ByName(_localSettings.Load<string>("LastVisitedSection"));
             await TryGetHeadersAsync(CurrentSection.Address);
+
+            if (!NoConnection)
+            {
+                //Loading some titles to the live tile from the last visited section
+                Random r = new Random();
+                for (int i = 0; i < 3; i++)
+                {
+                    int itemId = r.Next(Items.Count);
+                    _tileManager.SetTextTile(CurrentSection.Name, Items[itemId].WebTitle);
+                    _tileManager.SetImageTile(Items[itemId].StoryHeaderAdditionalFields.Thumbnail);
+                }
+            }
         }
 
         public Section CurrentSection

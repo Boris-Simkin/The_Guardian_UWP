@@ -17,6 +17,7 @@ namespace TheGuardian.UWP
         protected override IMvxApplication CreateApp()
         {
             Mvx.LazyConstructAndRegisterSingleton<ILocalSettings, LocalSettings>();
+            Mvx.LazyConstructAndRegisterSingleton<ITileManager, TileManager>();
             return new Core.App();
         }
 
