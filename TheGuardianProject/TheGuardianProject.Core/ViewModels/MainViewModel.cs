@@ -51,7 +51,7 @@ namespace TheGuardian.Core.ViewModels
         public async void Init()
         {
             CurrentSection = Sections.ByName(_localSettings.Load<string>("LastVisitedSection"));
-            await TryGetHeadersAsync(CurrentSection.Address);
+            await LoadSectionAsync(CurrentSection.Address);
 
             if (!NoConnection)
             {
@@ -72,7 +72,7 @@ namespace TheGuardian.Core.ViewModels
             set { Sections.Current = value; RaisePropertyChanged("CurrentSection"); }
         }
 
-        public async Task TryGetHeadersAsync(string section)
+        public async Task LoadSectionAsync(string section)
         {
             PageLoading = true;
             Dictionary<string, string> param = new Dictionary<string, string>();
@@ -82,6 +82,7 @@ namespace TheGuardian.Core.ViewModels
             {
                 SearchResult storyHeader = await _httpService.GetAsync<SearchResult>(Constants.BASE_API_URL + section, param);
                 Items = new ObservableCollection<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);
+                IsSectionPinned = _tileManager.IsPinned(CurrentSection.Name);
                 NoConnection = false;
             }
             catch (Exception)
@@ -113,7 +114,7 @@ namespace TheGuardian.Core.ViewModels
                     if (selectedSection != null)
                         CurrentSection = Sections.ByName(selectedSection);
                     _localSettings.Save("LastVisitedSection", CurrentSection.Name);
-                    await TryGetHeadersAsync(CurrentSection.Address);
+                    await LoadSectionAsync(CurrentSection.Address);
                 }));
             }
         }
@@ -125,10 +126,33 @@ namespace TheGuardian.Core.ViewModels
             {
                 return _reloadCommand ?? (_reloadCommand = new MvxAsyncCommand(async () =>
                 {
-                    await TryGetHeadersAsync(CurrentSection.Address);
+                    await LoadSectionAsync(CurrentSection.Address);
                 }));
             }
         }
 
+        private bool _isSectionPinned;
+
+        public bool IsSectionPinned
+        {
+            get { return _isSectionPinned; }
+            set { SetProperty(ref _isSectionPinned, value); }
+        }
+
+        private MvxAsyncCommand<bool> _togglePinSectionCommand;
+        public MvxAsyncCommand<bool> TogglePinSectionCommand
+        {
+            get
+            {
+                return _togglePinSectionCommand ?? (_togglePinSectionCommand = new MvxAsyncCommand<bool>(async (isChecked) =>
+                {
+                    if (isChecked)
+                        IsSectionPinned = await _tileManager.PinSecondaryTile(CurrentSection.Name, CurrentSection.Name, CurrentSection.Name);
+                    else
+                        IsSectionPinned = !await _tileManager.UnpinSecondaryTileAsync(CurrentSection.Name);
+
+                }));
+            }
+        }
     }
 }

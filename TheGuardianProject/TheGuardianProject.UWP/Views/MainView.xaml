@@ -40,6 +40,13 @@
                           Content="&#xE700;"
                           FontFamily="Segoe MDL2 Assets"
                           IsChecked="{Binding IsPaneOpen, ElementName=NavigationMenu, Mode=TwoWay}"/>
+            <ToggleButton x:Name="TogglePinSection" 
+                          Margin="10,0" 
+                          Content="&#xE840;"
+                          FontFamily="Segoe MDL2 Assets"
+                          Command="{Binding TogglePinSectionCommand}"
+                          CommandParameter="{Binding ElementName=TogglePinSection, Path=IsChecked}"
+                          IsChecked="{Binding IsSectionPinned, Mode=TwoWay}"/>
             <TextBlock Text="{Binding CurrentSection.Name}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="25" FontWeight="SemiBold"/>
         </StackPanel>
 

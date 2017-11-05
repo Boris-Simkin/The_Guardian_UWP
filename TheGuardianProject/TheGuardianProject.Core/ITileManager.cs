@@ -10,5 +10,8 @@ namespace TheGuardianProject.Core
     {
         void SetTextTile(string sectionName, string title);
         void SetImageTile(string url);
+        Task<bool> PinSecondaryTile(string tileId, string displayName, string arguments);
+        Task<bool> UnpinSecondaryTileAsync(string tileId);
+        bool IsPinned(string tileId);
     }
 }
