@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheGuardian.Core;
+using TheGuardian.Core.Models;
 
 namespace TheGuardianProject.Core.Models
 {
     public class Sections : IEnumerable<Section>
     {
-
         public Sections()
         {
             _current = _list.First();

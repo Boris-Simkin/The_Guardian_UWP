@@ -12,134 +12,49 @@ namespace TheGuardian.Core.ViewModels
 {
     public class MainViewModel : MvxViewModel
     {
-        private readonly HttpService _httpService;
+        #region fields
         private readonly ILocalSettings _localSettings;
         private readonly ITileManager _tileManager;
-        public MainViewModel(HttpService httpService, ILocalSettings localSettings, ITileManager tileManager)
-        {
-            _httpService = httpService;
-            _localSettings = localSettings;
-            _tileManager = tileManager;
+        private readonly Headers _headers;
 
-            Sections = new Sections();
-        }
-
+        private List<StoryHeader> _items;
+        private bool _noConnection;
+        private bool _pageLoading;
+        private MvxCommand<string> _readArticleCommand;
+        private MvxAsyncCommand<string> _loadSectionTitlesCommand;
+        private MvxAsyncCommand _reloadCommand;
+        private bool _isSectionPinned;
+        private MvxAsyncCommand<bool> _togglePinSectionCommand;
+        #endregion
+        #region properties
         public Sections Sections { get; private set; }
-
-        private ObservableCollection<StoryHeader> _items;
-
-        public ObservableCollection<StoryHeader> Items
+        public List<StoryHeader> Items
         {
             get { return _items; }
             private set { SetProperty(ref _items, value); }
         }
-
-        private bool _noConnection;
-        public bool NoConnection
-        {
-            get { return _noConnection; }
-            set { SetProperty(ref _noConnection, value); }
-        }
-
-        private bool _pageLoading;
-        public bool PageLoading
-        {
-            get { return _pageLoading; }
-            private set { SetProperty(ref _pageLoading, value); }
-        }
-
-        public async void Init()
-        {
-            CurrentSection = Sections.ByName(_localSettings.Load<string>("LastVisitedSection"));
-            await LoadSectionAsync(CurrentSection.Address);
-
-            if (!NoConnection)
-            {
-                //Loading some titles to the live tile from the last visited section
-                Random r = new Random();
-                for (int i = 0; i < 3; i++)
-                {
-                    int itemId = r.Next(Items.Count);
-                    _tileManager.SetTextTile(CurrentSection.Name, Items[itemId].WebTitle);
-                    _tileManager.SetImageTile(Items[itemId].StoryHeaderAdditionalFields.Thumbnail);
-                }
-            }
-        }
-
         public Section CurrentSection
         {
             get { return Sections.Current; }
             set { Sections.Current = value; RaisePropertyChanged("CurrentSection"); }
         }
-
-        public async Task LoadSectionAsync(string section)
+        public bool NoConnection
         {
-            PageLoading = true;
-            Dictionary<string, string> param = new Dictionary<string, string>();
-            param.Add("api-key", Constants.API_KEY);
-            param.Add(Constants.SHOW_FIELDS_PARAM, "thumbnail,trailText,headline");
-            try
-            {
-                SearchResult storyHeader = await _httpService.GetAsync<SearchResult>(Constants.BASE_API_URL + section, param);
-                Items = new ObservableCollection<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);
-                IsSectionPinned = _tileManager.IsPinned(CurrentSection.Name);
-                NoConnection = false;
-            }
-            catch (Exception)
-            {
-                NoConnection = true;
-            }
-            PageLoading = false;
+            get { return _noConnection; }
+            set { SetProperty(ref _noConnection, value); }
         }
-
-        private MvxCommand<string> _readArticleCommand;
-        public MvxCommand<string> ReadArticleCommand
+        public bool PageLoading
         {
-            get
-            {
-                return _readArticleCommand ?? (_readArticleCommand = new MvxCommand<string>((articleId) =>
-                    {
-                        ShowViewModel<ArticleViewModel>(new StoryHeader { Id = articleId });
-                    }));
-            }
+            get { return _pageLoading; }
+            private set { SetProperty(ref _pageLoading, value); }
         }
-
-        private MvxAsyncCommand<string> _loadSectionTitlesCommand;
-        public MvxAsyncCommand<string> LoadSectionTitlesCommand
-        {
-            get
-            {
-                return _loadSectionTitlesCommand ?? (_loadSectionTitlesCommand = new MvxAsyncCommand<string>(async (selectedSection) =>
-                {
-                    if (selectedSection != null)
-                        CurrentSection = Sections.ByName(selectedSection);
-                    _localSettings.Save("LastVisitedSection", CurrentSection.Name);
-                    await LoadSectionAsync(CurrentSection.Address);
-                }));
-            }
-        }
-
-        private MvxAsyncCommand _reloadCommand;
-        public MvxAsyncCommand ReloadCommand
-        {
-            get
-            {
-                return _reloadCommand ?? (_reloadCommand = new MvxAsyncCommand(async () =>
-                {
-                    await LoadSectionAsync(CurrentSection.Address);
-                }));
-            }
-        }
-
-        private bool _isSectionPinned;
-
         public bool IsSectionPinned
         {
             get { return _isSectionPinned; }
             set { SetProperty(ref _isSectionPinned, value); }
         }
-
-        private MvxAsyncCommand<bool> _togglePinSectionCommand;
+        #endregion
+        #region command properties
         public MvxAsyncCommand<bool> TogglePinSectionCommand
         {
             get
@@ -154,5 +69,92 @@ namespace TheGuardian.Core.ViewModels
                 }));
             }
         }
+        public MvxAsyncCommand ReloadCommand
+        {
+            get
+            {
+                return _reloadCommand ?? (_reloadCommand = new MvxAsyncCommand(async () =>
+                {
+                    await _headers.GetHeadersAsync(CurrentSection);
+                }));
+            }
+        }
+        public MvxCommand<string> ReadArticleCommand
+        {
+            get
+            {
+                return _readArticleCommand ?? (_readArticleCommand = new MvxCommand<string>((articleId) =>
+                {
+                    ShowViewModel<ArticleViewModel>(new StoryHeader { Id = articleId });
+                }));
+            }
+        }
+        public MvxAsyncCommand<string> LoadSectionTitlesCommand
+        {
+            get
+            {
+                return _loadSectionTitlesCommand ?? (_loadSectionTitlesCommand = new MvxAsyncCommand<string>(async (selectedSection) =>
+                {
+                    if (selectedSection != null)
+                        CurrentSection = Sections.ByName(selectedSection);
+                    if (!NoConnection)
+                    {
+                        _localSettings.Save("LastVisitedSection", CurrentSection.Name);
+                        await _headers.GetHeadersAsync(CurrentSection);
+                    }
+                }));
+            }
+        }
+        #endregion
+
+        public MainViewModel(HttpService httpService, ILocalSettings localSettings, ITileManager tileManager)
+        {
+            _localSettings = localSettings;
+            _tileManager = tileManager;
+
+            _headers = new Headers(httpService);
+            Sections = new Sections();
+        }
+
+        public async void Init()
+        {
+            _headers.HeadersLoading += OnHeadersLoading;
+            _headers.HeadersLoaded += OnHeadersLoaded;
+            CurrentSection = Sections.ByName(_localSettings.Load<string>("LastVisitedSection"));
+            await _headers.GetHeadersAsync(CurrentSection);
+        }
+
+        private void OnHeadersLoading(object sender, EventArgs e)
+        {
+            PageLoading = true;
+        }
+
+        private void OnHeadersLoaded(object sender, SucceedEventArgs e)
+        {
+            PageLoading = false;
+            if (e.Succeed)
+            {
+                NoConnection = false;
+                Items = _headers.ToList();
+                IsSectionPinned = _tileManager.IsPinned(CurrentSection.Name);
+                LoadTiles();
+            }
+            else
+                NoConnection = true;
+        }
+
+        private void LoadTiles()
+        {
+            //Loading some titles to the live tile from the last visited section
+            Random r = new Random();
+            for (int i = 0; i < 3; i++)
+            {
+                int itemId = r.Next(Items.Count);
+                _tileManager.SetTextTile(CurrentSection.Name, Items[itemId].WebTitle);
+                _tileManager.SetImageTile(Items[itemId].StoryHeaderAdditionalFields.Thumbnail);
+            }
+        }
+
+
     }
 }

@@ -77,7 +77,7 @@ namespace TheGuardianProject.UWP
             }
             catch (Exception)
             {
-                return false;
+                return true;
             }
         }
 
