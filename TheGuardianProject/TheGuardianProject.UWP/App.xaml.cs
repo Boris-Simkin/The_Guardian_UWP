@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform;
+using TheGuardianProject.Core;
 
 namespace TheGuardian.UWP
 {
@@ -41,6 +42,9 @@ namespace TheGuardian.UWP
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+
+            
+
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
@@ -78,7 +82,10 @@ namespace TheGuardian.UWP
                     setup.Initialize();
 
                     var start = Mvx.Resolve<IMvxAppStart>();
+                    // Resolve the tapped tile id if it was pressed
+                    Mvx.Resolve<ITileManager>().TappedTileId = e.TileId;
                     start.Start();
+                    
                 }
                 // Ensure the current window is active
                 Window.Current.Activate();

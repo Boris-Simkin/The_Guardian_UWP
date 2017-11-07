@@ -13,5 +13,6 @@ namespace TheGuardianProject.Core
         Task<bool> PinSecondaryTile(string tileId, string displayName, string arguments);
         Task<bool> UnpinSecondaryTileAsync(string tileId);
         bool IsPinned(string tileId);
+        string TappedTileId { get; set; }
     }
 }

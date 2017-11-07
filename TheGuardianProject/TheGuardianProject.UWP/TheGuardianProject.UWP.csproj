@@ -121,6 +121,13 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Business.png" />
+    <Content Include="Assets\Culture.png" />
+    <Content Include="Assets\Main.png" />
+    <Content Include="Assets\Opinion.png" />
+    <Content Include="Assets\Technology.png" />
+    <Content Include="Assets\Travel.png" />
+    <Content Include="Assets\World.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

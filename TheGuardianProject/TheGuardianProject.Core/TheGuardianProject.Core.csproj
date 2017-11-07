@@ -48,8 +48,6 @@
     <Compile Include="Models\StoryHeaderAdditionalFields.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="HeaderItem.cs" />
-    <Compile Include="HeaderList.cs" />
     <Compile Include="SucceedEventArgs.cs" />
     <Compile Include="ViewModels\ArticleViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

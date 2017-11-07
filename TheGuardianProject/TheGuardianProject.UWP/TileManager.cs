@@ -12,6 +12,7 @@ namespace TheGuardianProject.UWP
 {
     public class TileManager : ITileManager
     {
+        public string TappedTileId { get; set; }
         public TileManager()
         {
             TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
@@ -44,27 +45,17 @@ namespace TheGuardianProject.UWP
 
         public async Task<bool> PinSecondaryTile(string tileId, string displayName, string arguments)
         {
-            // Construct a unique tile ID, which you will need to use later for updating the tile
-            //string tileId = "City";
-
-            //// Use a display name you like
-            //string displayName = "Secondary tile test";
-
-            //// Provide all the required info in arguments so that when user
-            //// clicks your tile, you can navigate them to the correct content
-            //string arguments = "action=viewCity&zipCode=";
-
             // Initialize the tile with required arguments
             SecondaryTile tile = new SecondaryTile(
                 tileId,
                 displayName,
                 arguments,
-                new Uri("ms-appx:///Assets/Square150x150Logo.png"),
+                // The tile is set with an image corresponding to the section
+                new Uri($"ms-appx:///Assets/{displayName}.png"),
                 TileSize.Default);
 
             // Pin the tile
             return await tile.RequestCreateAsync();
-
         }
 
         public async Task<bool> UnpinSecondaryTileAsync(string tileId)

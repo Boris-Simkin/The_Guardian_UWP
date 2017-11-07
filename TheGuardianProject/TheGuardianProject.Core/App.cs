@@ -12,7 +12,6 @@ namespace TheGuardian.Core
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
 
-            //Mvx.LazyConstructAndRegisterSingleton<HeaderList, HeaderList>();
             Mvx.LazyConstructAndRegisterSingleton<HttpService, HttpService>();
 
             RegisterAppStart<ViewModels.MainViewModel>();

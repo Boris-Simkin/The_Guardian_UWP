@@ -120,7 +120,12 @@ namespace TheGuardian.Core.ViewModels
         {
             _headers.HeadersLoading += OnHeadersLoading;
             _headers.HeadersLoaded += OnHeadersLoaded;
-            CurrentSection = Sections.ByName(_localSettings.Load<string>("LastVisitedSection"));
+            //  Set the current section to the last visited or to the secondary tile
+            //  if the app was launched by secondary tile
+            if (_tileManager.TappedTileId == "App")
+                CurrentSection = Sections.ByName(_localSettings.Load<string>("LastVisitedSection"));
+            else CurrentSection = Sections.ByName(_tileManager.TappedTileId);
+
             await _headers.GetHeadersAsync(CurrentSection);
         }
 

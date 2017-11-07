@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TheGuardianProject.UWP
 {
-    class ShareManager
+    public class ShareManager
     {
     }
 }

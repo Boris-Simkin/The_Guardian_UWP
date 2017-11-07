@@ -30,8 +30,8 @@ namespace TheGuardian.UWP.Views
         {
             this.InitializeComponent();
         }
-        //Anumation stuff
 
+        #region  Anumation stuff
         private void HeaderImage_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             Image img = (Image)e.OriginalSource;
@@ -74,5 +74,6 @@ namespace TheGuardian.UWP.Views
             //When a header is pressed the another view loaded and access the element is impossible
             catch (Exception) { }
         }
+        #endregion
     }
 }
