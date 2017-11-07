@@ -17,8 +17,8 @@
     </views:MvxWindowsPage.Resources>
     <Page.TopAppBar>
         <CommandBar x:Name="MyCommandBar">
+            <AppBarButton Label="Share" Icon="Link" Command="{Binding ShareCommand}" Height="Auto"/>
             <CommandBar.Content>
-              
                 <AppBarButton Label="Go back" Icon="Back" Command="{Binding GoBackCommand}" Height="Auto"
                               IsCompact="{Binding IsOpen, ElementName=MyCommandBar, Converter={StaticResource InvertBoolean}}"/>
             </CommandBar.Content>

@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="DebugTrace.cs" />
     <Compile Include="LocalSettings.cs" />
+    <Compile Include="ShareManager.cs" />
     <Compile Include="TileManager.cs" />
     <Compile Include="Views\ArticleView.xaml.cs">
       <DependentUpon>ArticleView.xaml</DependentUpon>

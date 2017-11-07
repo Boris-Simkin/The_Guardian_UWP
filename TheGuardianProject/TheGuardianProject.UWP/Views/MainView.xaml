@@ -11,25 +11,62 @@
     xmlns:myViews="using:TheGuardianProject.UWP.Views"
     xmlns:converters="using:TheGuardianProject.UWP.Views.Converters"
     mc:Ignorable="d"
+    
     x:Name="myView">
 
     <views:MvxWindowsPage.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
         <DataTemplate x:Key="ItemTemplate">
-            <StackPanel Orientation="vertical"  HorizontalAlignment="Stretch" Margin="0,0,0,10" Padding="0,0,5,0" >
+            <StackPanel Orientation="vertical"  HorizontalAlignment="Stretch" Margin="0,0,0,10" 
+                        Padding="5,0,5,0" RenderTransformOrigin="0.5, 0.5"
+                        PointerEntered="Header_PointerEntered"
+                        PointerExited="Header_PointerExited">
+                <StackPanel.Resources>
+
+                    <Storyboard x:Key="Scale">
+                        <DoubleAnimation 
+                                    Duration="0:0:0.2"
+                                    To="1.05"
+                                    Storyboard.TargetProperty="ScaleX"
+                                    Storyboard.TargetName="compositeTransform" />
+                        <DoubleAnimation 
+                                    Duration="0:0:0.2"
+                                    To="1.05"
+                                    Storyboard.TargetProperty="ScaleY"
+                                    Storyboard.TargetName="compositeTransform"/>
+
+                    </Storyboard>
+                    <Storyboard x:Key="UnScale">
+                        <DoubleAnimation 
+                                    Duration="0:0:0.2"
+                                    To="1"
+                                    Storyboard.TargetProperty="ScaleX"
+                                    Storyboard.TargetName="compositeTransform" />
+                        <DoubleAnimation 
+                                    Duration="0:0:0.2"
+                                    To="1"
+                                    Storyboard.TargetProperty="ScaleY"
+                                    Storyboard.TargetName="compositeTransform" />
+
+                    </Storyboard>
+                </StackPanel.Resources>
+                <StackPanel.RenderTransform>
+                    <CompositeTransform x:Name="compositeTransform" />
+                </StackPanel.RenderTransform>
                 <TextBlock TextWrapping="WrapWholeWords" FontSize="22" Text="{Binding WebTitle}" Margin="0,0,0,10" />
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="180"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Image Source="{Binding StoryHeaderAdditionalFields.Thumbnail}" />
+                    <Image  x:Name="HeaderImage" Source="{Binding StoryHeaderAdditionalFields.Thumbnail}" 
+                           RenderTransformOrigin="0.5, 0.5"/>
                     <TextBlock Margin="5,0,0,0" Grid.Column="1" TextWrapping="WrapWholeWords" local:TextBlockHelper.FormattedText="{Binding StoryHeaderAdditionalFields.TrailText}"/>
                 </Grid>
             </StackPanel>
         </DataTemplate>
     </views:MvxWindowsPage.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+    <Grid x:Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
@@ -64,7 +101,7 @@
                 <ListView
                     x:Name="SectionsList"
                     ItemsSource="{Binding Sections}"
-                    ItemTemplate="{StaticResource SectionTemplate}" Loaded="SectionsList_Loaded" >
+                    ItemTemplate="{StaticResource SectionTemplate}">
                     <i:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="SelectionChanged" >
                             <Core:InvokeCommandAction Command="{Binding LoadSectionTitlesCommand}"

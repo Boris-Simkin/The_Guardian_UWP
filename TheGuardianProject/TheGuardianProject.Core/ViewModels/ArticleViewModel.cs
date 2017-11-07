@@ -90,5 +90,18 @@ namespace TheGuardian.Core.ViewModels
             }
         }
 
+        private MvxAsyncCommand _shareCommand;
+        public MvxAsyncCommand ShareCommand
+        {
+            get
+            {
+                return _shareCommand ?? (_shareCommand = new MvxAsyncCommand(async () =>
+                {
+                    
+                }));
+            }
+        }
+
+        
     }
 }

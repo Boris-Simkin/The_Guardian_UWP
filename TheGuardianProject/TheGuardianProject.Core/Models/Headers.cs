@@ -13,15 +13,15 @@ namespace TheGuardianProject.Core.Models
     public class Headers : IEnumerable<StoryHeader>
     {
         private readonly HttpService _httpService;
-        public Headers(HttpService httpService)
-        {
-            _httpService = httpService;
-        }
-
         private List<StoryHeader> _headersList = new List<StoryHeader>();
 
         public event EventHandler HeadersLoading;
         public event EventHandler<SucceedEventArgs> HeadersLoaded;
+
+        public Headers(HttpService httpService)
+        {
+            _httpService = httpService;
+        }
 
         public async Task GetHeadersAsync(Section section)
         {
@@ -33,7 +33,6 @@ namespace TheGuardianProject.Core.Models
             {
                 SearchResult storyHeader = await _httpService.GetAsync<SearchResult>(Constants.BASE_API_URL + section.Address, param);
                 _headersList = new List<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);
-
                 HeadersLoaded?.Invoke(this, new SucceedEventArgs(true));
             }
             catch (Exception)
