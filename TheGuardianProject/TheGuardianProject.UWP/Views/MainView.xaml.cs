@@ -75,5 +75,6 @@ namespace TheGuardian.UWP.Views
             catch (Exception) { }
         }
         #endregion
+
     }
 }

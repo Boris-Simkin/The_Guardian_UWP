@@ -18,6 +18,7 @@ namespace TheGuardian.UWP
         {
             Mvx.LazyConstructAndRegisterSingleton<ILocalSettings, LocalSettings>();
             Mvx.LazyConstructAndRegisterSingleton<ITileManager, TileManager>();
+            Mvx.LazyConstructAndRegisterSingleton<IShareManager, ShareManager>();
             return new Core.App();
         }
 

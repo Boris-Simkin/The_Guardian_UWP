@@ -8,8 +8,7 @@ namespace TheGuardianProject.Core
 {
     public interface ITileManager
     {
-        void SetTextTile(string sectionName, string title);
-        void SetImageTile(string url);
+        void SetTile(string sectionName, string title, string url);
         Task<bool> PinSecondaryTile(string tileId, string displayName, string arguments);
         Task<bool> UnpinSecondaryTileAsync(string tileId);
         bool IsPinned(string tileId);

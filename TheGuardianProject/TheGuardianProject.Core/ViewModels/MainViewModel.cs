@@ -17,26 +17,24 @@ namespace TheGuardian.Core.ViewModels
         private readonly ITileManager _tileManager;
         private readonly Headers _headers;
 
-        private List<StoryHeader> _items;
         private bool _noConnection;
         private bool _pageLoading;
         private MvxCommand<string> _readArticleCommand;
         private MvxAsyncCommand<string> _loadSectionTitlesCommand;
         private MvxAsyncCommand _reloadCommand;
         private bool _isSectionPinned;
-        private MvxAsyncCommand<bool> _togglePinSectionCommand;
+        private MvxAsyncCommand _togglePinSectionCommand;
         #endregion
         #region properties
         public Sections Sections { get; private set; }
         public List<StoryHeader> Items
         {
-            get { return _items; }
-            private set { SetProperty(ref _items, value); }
+            get { return _headers.ToList(); }
         }
         public Section CurrentSection
         {
             get { return Sections.Current; }
-            set { Sections.Current = value; RaisePropertyChanged("CurrentSection"); }
+            set { Sections.Current = value; RaisePropertyChanged(); }
         }
         public bool NoConnection
         {
@@ -55,13 +53,13 @@ namespace TheGuardian.Core.ViewModels
         }
         #endregion
         #region command properties
-        public MvxAsyncCommand<bool> TogglePinSectionCommand
+        public MvxAsyncCommand TogglePinSectionCommand
         {
             get
             {
-                return _togglePinSectionCommand ?? (_togglePinSectionCommand = new MvxAsyncCommand<bool>(async (isChecked) =>
+                return _togglePinSectionCommand ?? (_togglePinSectionCommand = new MvxAsyncCommand(async () =>
                 {
-                    if (isChecked)
+                    if (!_tileManager.IsPinned(CurrentSection.Name))
                         IsSectionPinned = await _tileManager.PinSecondaryTile(CurrentSection.Name, CurrentSection.Name, CurrentSection.Name);
                     else
                         IsSectionPinned = !await _tileManager.UnpinSecondaryTileAsync(CurrentSection.Name);
@@ -107,13 +105,12 @@ namespace TheGuardian.Core.ViewModels
         }
         #endregion
 
-        public MainViewModel(HttpService httpService, ILocalSettings localSettings, ITileManager tileManager)
+        public MainViewModel(Headers headers, Sections sections, ILocalSettings localSettings, ITileManager tileManager)
         {
             _localSettings = localSettings;
             _tileManager = tileManager;
-
-            _headers = new Headers(httpService);
-            Sections = new Sections();
+            _headers = headers;
+            Sections = sections;
         }
 
         public async void Init()
@@ -140,7 +137,7 @@ namespace TheGuardian.Core.ViewModels
             if (e.Succeed)
             {
                 NoConnection = false;
-                Items = _headers.ToList();
+                RaisePropertyChanged("Items");
                 IsSectionPinned = _tileManager.IsPinned(CurrentSection.Name);
                 LoadTiles();
             }
@@ -152,11 +149,13 @@ namespace TheGuardian.Core.ViewModels
         {
             //Loading some titles to the live tile from the last visited section
             Random r = new Random();
-            for (int i = 0; i < 3; i++)
+
+           for (int i = 0; i < 3; i++)
             {
-                int itemId = r.Next(Items.Count);
-                _tileManager.SetTextTile(CurrentSection.Name, Items[itemId].WebTitle);
-                _tileManager.SetImageTile(Items[itemId].StoryHeaderAdditionalFields.Thumbnail);
+                int itemId = r.Next(Items.ToList().Count);
+
+                _tileManager.SetTile(CurrentSection.Name, Items[itemId].WebTitle, 
+                    Items[itemId].StoryHeaderAdditionalFields.Thumbnail);
             }
         }
 

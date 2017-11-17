@@ -82,7 +82,6 @@
                           Content="&#xE840;"
                           FontFamily="Segoe MDL2 Assets"
                           Command="{Binding TogglePinSectionCommand}"
-                          CommandParameter="{Binding ElementName=TogglePinSection, Path=IsChecked}"
                           IsChecked="{Binding IsSectionPinned, Mode=TwoWay}"/>
             <TextBlock Text="{Binding CurrentSection.Name}" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="25" FontWeight="SemiBold"/>
         </StackPanel>
@@ -113,24 +112,24 @@
 
             </SplitView.Pane>
             <SplitView.Content>
-                <ListView 
+                    <ListView 
                     x:Name="ArticlesList"
                     ItemsSource="{Binding Items}"
                     ItemTemplate="{StaticResource ItemTemplate}">
-                    <ListView.Visibility>
-                        <Binding Path="NoConnection" Converter="{StaticResource BooleanToVisibility}">
-                            <Binding.ConverterParameter>
-                                <x:Boolean>True</x:Boolean>
-                            </Binding.ConverterParameter>
-                        </Binding>
-                    </ListView.Visibility>
-                    <i:Interaction.Behaviors>
-                        <Core:EventTriggerBehavior EventName="SelectionChanged" >
-                            <Core:InvokeCommandAction Command="{Binding ReadArticleCommand}"
+                        <ListView.Visibility>
+                            <Binding Path="NoConnection" Converter="{StaticResource BooleanToVisibility}">
+                                <Binding.ConverterParameter>
+                                    <x:Boolean>True</x:Boolean>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </ListView.Visibility>
+                        <i:Interaction.Behaviors>
+                            <Core:EventTriggerBehavior EventName="SelectionChanged" >
+                                <Core:InvokeCommandAction Command="{Binding ReadArticleCommand}"
                                                       CommandParameter="{Binding ElementName=ArticlesList, Path=SelectedItem.Id}"/>
-                        </Core:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </ListView>
+                            </Core:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ListView>
             </SplitView.Content>
 
         </SplitView>

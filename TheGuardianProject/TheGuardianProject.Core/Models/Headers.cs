@@ -15,6 +15,11 @@ namespace TheGuardianProject.Core.Models
         public event EventHandler HeadersLoading;
         public event EventHandler<SucceedEventArgs> HeadersLoaded;
 
+        private void OnHeadersLoaded(bool succeed)
+        {
+            HeadersLoaded?.Invoke(this, new SucceedEventArgs(succeed));
+        }
+
         public Headers(HttpService httpService)
         {
             _httpService = httpService;
@@ -30,11 +35,11 @@ namespace TheGuardianProject.Core.Models
             {
                 SearchResult storyHeader = await _httpService.GetAsync<SearchResult>(Constants.BASE_API_URL + section.Address, param);
                 _headersList = new List<StoryHeader>(storyHeader.SearchResponse.StoryHeaders);
-                HeadersLoaded?.Invoke(this, new SucceedEventArgs(true));
+                OnHeadersLoaded(true);
             }
             catch (Exception)
             {
-                HeadersLoaded?.Invoke(this, new SucceedEventArgs(false));
+                OnHeadersLoaded(false);
             }
         }
 

@@ -32,7 +32,7 @@ public class HttpService
             }
         }
         doc.LoadHtml(result);
-
+        // Filtering unwanted classes and ids from the content
         var toRemove = doc.DocumentNode.Descendants()
               .Where(x => (x.Attributes.Contains("class")
               && classes.IsMatch(x.Attributes["class"].Value)) ||

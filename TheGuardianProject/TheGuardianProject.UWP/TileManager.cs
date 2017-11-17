@@ -7,6 +7,7 @@ using TheGuardianProject.Core;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 using Windows.UI.StartScreen;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace TheGuardianProject.UWP
 {
@@ -18,29 +19,71 @@ namespace TheGuardianProject.UWP
             TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
         }
 
-        public void SetImageTile(string url)
+        public void SetTile(string header, string title, string url)
         {
-            var tileXml =
-                TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare150x150Image);
+            //I want my image tile without text
+            var imageTile = new TileBinding()
+            {
+                Content = new TileBindingContentAdaptive()
+                {
+                    BackgroundImage = new TileBackgroundImage()
+                    {
+                        Source = url
+                    }
+                }
+            };
 
-            var tileAttributes = tileXml.GetElementsByTagName("image");
+            var textTile = new TileBinding()
+            {
+                Content = new TileBindingContentAdaptive()
+                {
+                    Children =
+                    {
+                        new AdaptiveText()
+                        {
+                            Text = header,
+                            HintStyle = AdaptiveTextStyle.Body,
+                            HintWrap = true
+                        },
 
-            ((XmlElement)tileAttributes[0]).SetAttribute("src", url);
-            var tileNotification = new TileNotification(tileXml);
-            TileUpdateManager.CreateTileUpdaterForApplication().Update(tileNotification);
-        }
+                        new AdaptiveText()
+                        {
+                            Text = title,
+                            HintStyle = AdaptiveTextStyle.BodySubtle,
+                            HintWrap = true
+                        }
+                    }
+                }
+            };
 
-        public void SetTextTile(string header, string title)
-        {
-            var tileXml =
-                TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare150x150Text02);
+            // Construct the tile content
+            TileContent content = new TileContent()
+            {
+                Visual = new TileVisual()
+                {
+                    TileMedium = textTile,
+                    TileWide = textTile,
+                }
+            };
+            // Create the tile notification
+            var notification = new TileNotification(content.GetXml());
+            // Set the notification
+            TileUpdateManager.CreateTileUpdaterForApplication().Update(notification);
 
-            var tileAttributes = tileXml.GetElementsByTagName("text");
+            // Construct the tile content
+            content = new TileContent()
+            {
+                Visual = new TileVisual()
+                {
+                    TileMedium = imageTile,
+                    TileWide = imageTile,
+                }
+            };
+            // Create the tile notification
+            notification = new TileNotification(content.GetXml());
+            // Set the notification
+            TileUpdateManager.CreateTileUpdaterForApplication().Update(notification);
 
-            tileAttributes[0].AppendChild(tileXml.CreateTextNode(header));
-            tileAttributes[1].AppendChild(tileXml.CreateTextNode(title));
-            var tileNotification = new TileNotification(tileXml);
-            TileUpdateManager.CreateTileUpdaterForApplication().Update(tileNotification);
         }
 
         public async Task<bool> PinSecondaryTile(string tileId, string displayName, string arguments)

@@ -5,7 +5,6 @@ namespace TheGuardian.Core.Models
 {
     public class StoryHeader
     {
-        //public string Test => "Sample text with <Bold>bold</Bold>, word.";
 
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
